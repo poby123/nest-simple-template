@@ -1,16 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserSignupDto } from '../dto/createUser.dto';
-import { log } from 'console';
+import { UserSignupRequestDto } from '../dto/create-user.dto';
+import { User } from '../entity/user.entity';
+import { UserNotFoundException } from '../exception/user-not-found.exception';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<User[]> {
     console.log('find all');
@@ -23,7 +23,7 @@ export class UserService {
     console.log('find one: ', user);
 
     if (!user) {
-      throw new Error('User not Found');
+      throw new UserNotFoundException();
     }
 
     return user;
@@ -33,10 +33,10 @@ export class UserService {
     await this.userRepository.delete(id);
   }
 
-  async save(userDto: UserSignupDto) {
-    const createdUser = await this.userRepository.save(
-      UserSignupDto.toEntity(userDto),
+  async save(userDto: UserSignupRequestDto) {
+    const createdUser: User = await this.userRepository.save(
+      UserSignupRequestDto.toEntity(userDto),
     );
-    return createdUser.id;
+    return createdUser;
   }
 }
