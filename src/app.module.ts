@@ -2,14 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './domain/auth/auth.module';
 import { User } from './domain/user/entity/user.entity';
 import { UserModule } from './domain/user/user.module';
-import { AuthModule } from './domain/auth/auth.module';
-import { AuthGuard, PassportModule } from '@nestjs/passport';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthService } from './domain/auth/service/auth.service';
-import { JwtUtils } from './domain/auth/utils/jwt.utils';
-import { UserService } from './domain/user/service/user.service';
 
 @Module({
   imports: [
@@ -29,4 +24,4 @@ import { UserService } from './domain/user/service/user.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

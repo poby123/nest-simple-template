@@ -12,19 +12,26 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtUtils: JwtUtils,
-  ) {}
+  ) { }
 
-  async signIn(signinDto: SigninRequestDto) {
-    const { email, password } = signinDto;
+  async signIn(user: any) {
+    const payload = { email: user.email, sub: user.id };
+    const accessToken = await this.jwtUtils.createAccessToken(payload);
+
+    return {
+      accessToken
+    }
+  }
+
+  async validate(email: string, plainPassword: string) {
     const user: User = await this.userService.getUserByEmail(email);
 
-    if (!(await compare(password, user.password))) {
+    if (!(await compare(plainPassword, user.password))) {
       throw new CustomException(INCORRECT_PASSWORD);
     }
 
-    const payload = { email: email, sub: user.id };
-    return {
-      accessToken: await this.jwtUtils.createAccessToken(payload),
-    };
+    const { password, ...result } = user;
+
+    return result;
   }
 }

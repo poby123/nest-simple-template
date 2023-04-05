@@ -1,13 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { SigninRequestDto } from 'src/domain/user/dto/siginin-req.dto';
+import { LocalAuthGuard } from '../guard/local.guard';
+import { Public } from 'src/global/decorator/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authSerivce: AuthService) {}
+  constructor(private readonly authSerivce: AuthService) { }
 
   @Post('/signin')
-  async signIn(@Body() signinReq: SigninRequestDto) {
-    return await this.authSerivce.signIn(signinReq);
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  async signIn(@Req() req) {
+    const accessToken = this.authSerivce.signIn(req.user);
+    return accessToken;
   }
 }

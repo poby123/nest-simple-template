@@ -20,10 +20,12 @@ import { UserProfileDto } from '../dto/user-profile.dto';
 import { User } from '../entity/user.entity';
 import { UserService } from '../service/user.service';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/domain/auth/guard/jwt.guard';
+import { Public } from 'src/global/decorator/public.decorator';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userSerivce: UserService) {}
+  constructor(private readonly userSerivce: UserService) { }
 
   @Get('/all')
   @HttpCode(GET_ALL_USERS_SUCCESS.status)
@@ -36,7 +38,6 @@ export class UserController {
   }
 
   @Get('/profile')
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(GET_USER_SUCCESS.status)
   async getMyProfile(@Req() req) {
     const id = req.user.sub;
@@ -46,7 +47,6 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(GET_USER_SUCCESS.status)
   async getUser(@Param('id') id: number) {
     const user = await this.userSerivce.getUserById(id);
@@ -57,6 +57,7 @@ export class UserController {
 
   @Post('/signup')
   @HttpCode(SIGNUP_USER_SUCCESS.status)
+  @Public()
   async postUser(@Body() signupDto: SignupRequestDto) {
     const createdUser: User = await this.userSerivce.save(signupDto);
     const data = UserProfileDto.of(createdUser);

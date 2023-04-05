@@ -1,15 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
   CustomExceptionFilter,
   HttpExceptionFilter,
 } from './global/error/custom-filter.error';
 import { formatErrors } from './global/validators/custom.validation';
+import { JwtAuthGuard } from './domain/auth/guard/jwt.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const httpAdapterHost = app.get(HttpAdapterHost);
+  const reflector = app.get(Reflector);
 
   // validation pipes
   // whiteList -> 엔티티 데코레이터에 없는 프로퍼티 값은 무조건 거름
@@ -27,6 +29,9 @@ async function bootstrap() {
   // exception filters
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
   app.useGlobalFilters(new CustomExceptionFilter(httpAdapterHost));
+
+  // guards
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   await app.listen(3000);
 }
