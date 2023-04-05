@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
-import { ErrorResponseType } from './types/response-error.type';
-import { FieldError } from './field-error';
+import { ErrorResponseType } from './type.error';
+import { FieldError } from './field.error';
 
 class CustomException extends HttpException {
   error: ErrorResponseType;

@@ -3,9 +3,9 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { FieldError } from '../error/field-error';
-import { CustomException } from '../error/custom-exception';
-import { ErrorCode } from '../error/error-code';
+import { FieldError } from '../error/field.error';
+import { CustomException } from '../error/custom-exception.error';
+import { INVALID_REQUEST } from '../error/res-code.error';
 
 @ValidatorConstraint()
 export class TextLengthMore15 implements ValidatorConstraintInterface {
@@ -18,7 +18,7 @@ export const formatErrors = (errors: Array<ValidationError>) => {
   const fieldErrors = errors.map((m) => FieldError.of(m));
 
   const invalidRequestException = new CustomException(
-    ErrorCode.INVALID_REQUEST,
+    INVALID_REQUEST,
     fieldErrors,
   );
 

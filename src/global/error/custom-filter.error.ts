@@ -1,13 +1,7 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ErrorCode } from './error-code';
-import { CustomException } from './custom-exception';
+import { CustomException } from './custom-exception.error';
+import { INTERNAL_SERVER_ERROR } from './res-code.error';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -26,7 +20,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return;
     }
 
-    const responseBody = ErrorCode.SERVER_ERROR;
+    const responseBody = INTERNAL_SERVER_ERROR;
     const httpStatus = responseBody.status;
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
