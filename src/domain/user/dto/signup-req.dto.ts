@@ -6,8 +6,9 @@ import {
   MinLength,
 } from 'class-validator';
 import { User } from '../entity/user.entity';
+import { encrypt } from 'src/domain/auth/utils/bcrypt.utils';
 
-export class UserSignupRequestDto {
+export class SignupRequestDto {
   @IsNotEmpty({ message: '이름은 필수입력입니다.' })
   public name: string;
 
@@ -25,8 +26,9 @@ export class UserSignupRequestDto {
   @IsEmail(undefined, { message: '이메일 형식이어야합니다.' })
   public email: string;
 
-  static toEntity(userSignupDto: UserSignupRequestDto): User {
+  static async toEntity(userSignupDto: SignupRequestDto): Promise<User> {
     const { name, email, password } = userSignupDto;
-    return new User(name, email, password);
+    const encryptedPassword = await encrypt(password);
+    return new User(name, email, encryptedPassword);
   }
 }

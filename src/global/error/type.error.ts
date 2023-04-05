@@ -1,6 +1,6 @@
 import { FieldError } from './field.error';
 
-export interface ErrorResponseType {
+export class ErrorResponse {
   status: number;
   code: string;
   message: string;

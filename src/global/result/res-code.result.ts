@@ -13,3 +13,9 @@ export const GET_ALL_USERS_SUCCESS: ResultResponse = {
   code: 'U002',
   message: '모든 사용자 조회에 성공했습니다',
 };
+
+export const SIGNUP_USER_SUCCESS: ResultResponse = {
+  status: HttpStatus.CREATED,
+  code: 'U003',
+  message: '회원가입에 성공했습니다.',
+};

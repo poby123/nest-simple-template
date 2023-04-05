@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/entity/user.entity';
-import { UserModule } from './user/user.module';
+import { User } from './domain/user/entity/user.entity';
+import { UserModule } from './domain/user/user.module';
+import { AuthModule } from './domain/auth/auth.module';
+import { AuthGuard, PassportModule } from '@nestjs/passport';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthService } from './domain/auth/service/auth.service';
+import { JwtUtils } from './domain/auth/utils/jwt.utils';
+import { UserService } from './domain/user/service/user.service';
 
 @Module({
   imports: [
@@ -18,8 +24,9 @@ import { UserModule } from './user/user.module';
       synchronize: false, // production에서는 끄기, 데이터가 날아갈 수 있다.
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
