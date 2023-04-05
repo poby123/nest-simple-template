@@ -4,11 +4,12 @@ import { UserProfileListDto } from '../dto/user-profile-list.dto';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { User } from '../entity/user.entity';
 import { UserService } from '../service/user.service';
+import { CustomException } from 'src/global/error/custom-exception';
+import { ErrorCode } from 'src/global/error/error-code';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userSerivce: UserService) { }
-
+  constructor(private readonly userSerivce: UserService) {}
 
   @Get('/all')
   async getUsers() {
@@ -18,14 +19,12 @@ export class UserController {
     return new UserProfileListDto(userProfiles);
   }
 
-
   @Get(':id')
   async getUser(@Param('id') id: number) {
     const user = await this.userSerivce.findOne(id);
 
     return UserProfileDto.of(user);
   }
-
 
   @Post('/add')
   async postUser(@Body() signupDto: UserSignupRequestDto) {
