@@ -14,7 +14,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(req: Request) {
     try {
-      const token = await this.jwtUtils.extractToken(req);
+      const token = await this.jwtUtils.extractAccessToken(req);
       const user = await this.jwtUtils.verifyAccessToken(token);
       return user;
     } catch (e) {

@@ -1,6 +1,23 @@
 import { HttpStatus } from '@nestjs/common';
 import { ResultResponse } from './response.result';
 
+// AUTH
+export const SIGN_IN_SUCCESS: ResultResponse = {
+  status: HttpStatus.OK,
+  code: 'A001',
+  message: '로그인에 성공했습니다.',
+};
+export const SIGN_OUT_SUCCESS: ResultResponse = {
+  status: HttpStatus.OK,
+  code: 'A002',
+  message: '로그아웃에 성공했습니다',
+};
+export const REISSUE_SUCCESS: ResultResponse = {
+  status: HttpStatus.OK,
+  code: 'A003',
+  message: '토큰 재발급에 성공했습니다.',
+};
+
 // USERS
 export const GET_USER_SUCCESS: ResultResponse = {
   status: HttpStatus.OK,

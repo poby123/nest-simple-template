@@ -8,6 +8,7 @@ import { JwtUtils } from './utils/jwt.utils';
 import { AccessTokenStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { ReissueStrategy } from './strategy/reissue.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,13 @@ import { PassportModule } from '@nestjs/passport';
       signOptions: { expiresIn: ACCESS_TOKEN_EXPIRES_TIME },
     }),
   ],
-  providers: [AuthService, JwtUtils, AccessTokenStrategy, LocalStrategy],
+  providers: [
+    AuthService,
+    JwtUtils,
+    AccessTokenStrategy,
+    LocalStrategy,
+    ReissueStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })

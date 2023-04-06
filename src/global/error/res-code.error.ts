@@ -40,6 +40,11 @@ export const NOT_AUTHORIZED: ErrorResponse = {
   code: 'A005',
   message: '권한이 없습니다.',
 };
+export const NOT_EXPIRED_JWT: ErrorResponse = {
+  status: HttpStatus.UNAUTHORIZED,
+  code: 'A006',
+  message: '만료되지 않은 토큰입니다.',
+};
 
 // user
 export const USER_NOT_FOUND: ErrorResponse = {

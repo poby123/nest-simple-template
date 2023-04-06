@@ -7,6 +7,7 @@ import {
 } from './global/error/custom-filter.error';
 import { formatErrors } from './global/validators/custom.validation';
 import { JwtAuthGuard } from './domain/auth/guard/jwt.guard';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +33,9 @@ async function bootstrap() {
 
   // guards
   app.useGlobalGuards(new JwtAuthGuard(reflector));
+
+  // cookie
+  app.use(cookieParser());
 
   await app.listen(3000);
 }
