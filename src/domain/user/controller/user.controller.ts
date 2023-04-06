@@ -15,7 +15,7 @@ import { UserService } from '../service/user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userSerivce: UserService) {}
+  constructor(private readonly userSerivce: UserService) { }
 
   @Get('/all')
   @HttpCode(GET_ALL_USERS_SUCCESS.status)
@@ -29,8 +29,10 @@ export class UserController {
 
   @Get('/profile')
   @HttpCode(GET_USER_SUCCESS.status)
-  async getMyProfile(@SignedUser() id) {
-    const data = await this.userSerivce.getUserById(id);
+  async getMyProfile(@SignedUser() user) {
+    console.log(user);
+
+    const data = await this.userSerivce.getUserById(user.id);
     return new ResultResponse(GET_USER_SUCCESS, data);
   }
 

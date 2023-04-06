@@ -6,7 +6,7 @@ import { NOT_AUTHORIZED } from '../error/res-code.error';
 export const SignedUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user.id;
+    return request.user;
   },
 );
 

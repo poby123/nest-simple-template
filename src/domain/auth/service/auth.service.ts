@@ -1,11 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { compare } from 'bcrypt';
+import { Cache } from 'cache-manager';
 import { User } from 'src/domain/user/entity/user.entity';
 import { UserService } from 'src/domain/user/service/user.service';
 import { CustomException } from 'src/global/error/custom-exception.error';
 import { INCORRECT_PASSWORD } from 'src/global/error/res-code.error';
 import { JwtUtils } from '../utils/jwt.utils';
-import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -13,13 +13,12 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtUtils: JwtUtils,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
+  ) { }
 
   async signIn(user: any) {
     const accessToken = await this.jwtUtils.createAccessToken(user);
     const refreshToken = await this.jwtUtils.createRefreshToken();
-
-    this.cacheManager.set(user.id, refreshToken);
+    await this.jwtUtils.saveRefreshToken(user, refreshToken);
 
     return {
       accessToken,
@@ -32,8 +31,7 @@ export class AuthService {
   }
 
   async reissue(user: any) {
-    const accessToken = await this.jwtUtils.createAccessToken(user);
-    return accessToken;
+    return await this.signIn(user);
   }
 
   async validate(email: string, plainPassword: string) {

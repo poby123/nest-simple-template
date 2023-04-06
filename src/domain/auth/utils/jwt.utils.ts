@@ -1,16 +1,17 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
 import { Request } from 'express';
 import { CustomException } from 'src/global/error/custom-exception.error';
 import { INVALID_JWT } from 'src/global/error/res-code.error';
-import { Cache } from 'cache-manager';
+import { toSeconds } from 'src/global/utils/time.utils';
 import {
   ACCESS_TOKEN_EXPIRES_TIME,
-  ACCESS_TOKEN_TYPE,
-  COOKIE_REFRESH_TOKEN_TYPE,
+  JWT_TOKEN_TYPE,
+  REFRESH_TOKEN_SUBJECT,
   KEY,
-  PAYLOAD_ACCESS_TOKEN_TYPE,
-  PREFIX_ACCESS_TOKEN_TYPE,
+  ACCESS_TOKEN_SUBJECT,
+  PREFIX_JWT_TOKEN_TYPE,
   REFRESH_TOKEN_EXPIRES_TIME,
 } from '../constants';
 
@@ -19,13 +20,13 @@ export class JwtUtils {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
+  ) { }
 
   async createAccessToken(user: any) {
     const payload = {
-      sub: PAYLOAD_ACCESS_TOKEN_TYPE,
+      sub: ACCESS_TOKEN_SUBJECT,
       id: user.id,
-      type: ACCESS_TOKEN_TYPE,
+      type: JWT_TOKEN_TYPE,
     };
     const token: string = await this.jwtService.signAsync(payload, {
       secret: KEY,
@@ -33,7 +34,7 @@ export class JwtUtils {
       algorithm: 'HS512',
     });
 
-    const accessToken = `${ACCESS_TOKEN_TYPE} ${token}`;
+    const accessToken = `${JWT_TOKEN_TYPE} ${token}`;
     return accessToken;
   }
 
@@ -51,9 +52,13 @@ export class JwtUtils {
     return refreshToken;
   }
 
+  async saveRefreshToken(user: any, refreshToken: string) {
+    await this.cacheManager.set(`${REFRESH_TOKEN_SUBJECT}:${user.id}`, refreshToken);
+  }
+
   async extractAccessToken(req: Request) {
     const token = req.headers['authorization']?.slice(
-      PREFIX_ACCESS_TOKEN_TYPE.length,
+      PREFIX_JWT_TOKEN_TYPE.length,
     );
 
     if (!token) {
@@ -64,7 +69,7 @@ export class JwtUtils {
   }
 
   async extractRefreshToken(req: Request) {
-    const token = req.cookies[COOKIE_REFRESH_TOKEN_TYPE];
+    const token = req.cookies[REFRESH_TOKEN_SUBJECT];
 
     if (!token) {
       throw new CustomException(INVALID_JWT);
@@ -79,10 +84,26 @@ export class JwtUtils {
       ignoreExpiration: false,
     });
 
-    if (payload?.sub !== PAYLOAD_ACCESS_TOKEN_TYPE) {
+    if (payload?.sub !== ACCESS_TOKEN_SUBJECT) {
       throw new CustomException(INVALID_JWT);
     }
-    if (payload?.type != ACCESS_TOKEN_TYPE) {
+    if (payload?.type != JWT_TOKEN_TYPE) {
+      throw new CustomException(INVALID_JWT);
+    }
+
+    return payload;
+  }
+
+  async verifyAccessTokenIgnoreExpiration(token: string) {
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: KEY,
+      ignoreExpiration: true,
+    });
+
+    if (payload?.sub !== ACCESS_TOKEN_SUBJECT) {
+      throw new CustomException(INVALID_JWT);
+    }
+    if (payload?.type != JWT_TOKEN_TYPE) {
       throw new CustomException(INVALID_JWT);
     }
 
@@ -96,7 +117,7 @@ export class JwtUtils {
    * @returns
    */
   async verifyRefreshToken(user: any, token: string): Promise<boolean> {
-    const savedToken = await this.cacheManager.get(user.id);
+    const savedToken = await this.cacheManager.get(`${REFRESH_TOKEN_SUBJECT}:${user.id}`);
     if (savedToken !== token) {
       console.log('invalid refresh token');
 
