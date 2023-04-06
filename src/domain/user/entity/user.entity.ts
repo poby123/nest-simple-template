@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AUTHORITY } from './enum/authority.enum';
 
 @Entity()
 export class User {
@@ -6,7 +7,7 @@ export class User {
   id: number;
 
   @Column()
-  name: string;
+  username: string;
 
   @Column({ unique: true })
   email: string;
@@ -17,8 +18,11 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: AUTHORITY.ROLE_USER })
+  authority: AUTHORITY;
+
   constructor(name: string, email: string, password: string) {
-    this.name = name;
+    this.username = name;
     this.email = email;
     this.password = password;
   }

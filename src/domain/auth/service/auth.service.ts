@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { compare } from 'bcrypt';
-import { SigninRequestDto } from 'src/domain/user/dto/siginin-req.dto';
 import { User } from 'src/domain/user/entity/user.entity';
 import { UserService } from 'src/domain/user/service/user.service';
 import { CustomException } from 'src/global/error/custom-exception.error';
@@ -12,15 +11,14 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtUtils: JwtUtils,
-  ) { }
+  ) {}
 
   async signIn(user: any) {
-    const payload = { email: user.email, sub: user.id };
-    const accessToken = await this.jwtUtils.createAccessToken(payload);
+    const accessToken = await this.jwtUtils.createAccessToken(user);
 
     return {
-      accessToken
-    }
+      accessToken,
+    };
   }
 
   async validate(email: string, plainPassword: string) {

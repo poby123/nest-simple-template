@@ -30,6 +30,16 @@ export const EXPIRED_JWT: ErrorResponse = {
   code: 'A003',
   message: '만료된 토큰입니다.',
 };
+export const LOGIN_FAILED: ErrorResponse = {
+  status: HttpStatus.UNAUTHORIZED,
+  code: 'A004',
+  message: '로그인에 실패했습니다.',
+};
+export const NOT_AUTHORIZED: ErrorResponse = {
+  status: HttpStatus.UNAUTHORIZED,
+  code: 'A005',
+  message: '권한이 없습니다.',
+};
 
 // user
 export const USER_NOT_FOUND: ErrorResponse = {

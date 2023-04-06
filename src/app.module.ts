@@ -24,4 +24,4 @@ import { UserModule } from './domain/user/user.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

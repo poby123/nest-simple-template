@@ -1,13 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { Public } from 'src/global/decorator/public.decorator';
+import { SignedUser } from 'src/global/decorator/user.decorator';
 import {
   GET_ALL_USERS_SUCCESS,
   GET_USER_SUCCESS,
@@ -19,13 +12,10 @@ import { UserProfileListDto } from '../dto/user-profile-list.dto';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { User } from '../entity/user.entity';
 import { UserService } from '../service/user.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/domain/auth/guard/jwt.guard';
-import { Public } from 'src/global/decorator/public.decorator';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userSerivce: UserService) { }
+  constructor(private readonly userSerivce: UserService) {}
 
   @Get('/all')
   @HttpCode(GET_ALL_USERS_SUCCESS.status)
@@ -39,10 +29,8 @@ export class UserController {
 
   @Get('/profile')
   @HttpCode(GET_USER_SUCCESS.status)
-  async getMyProfile(@Req() req) {
-    const id = req.user.sub;
+  async getMyProfile(@SignedUser() id) {
     const data = await this.userSerivce.getUserById(id);
-
     return new ResultResponse(GET_USER_SUCCESS, data);
   }
 
